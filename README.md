@@ -20,17 +20,37 @@ Each service contains 1 or more containers and can be scaled independently from 
 Due to the computing power and disk space requirements, the project was designed to be run on several machines,
 preferably in a cloud.
 
-The host machine (from which deployment will be made) requires:
+**1. If you choose to deploy the cluster on DigitalOcean or Scaleway**
 
-- Ubuntu Wily 15.10 – 64 bit
-- Note: it is possible to run the project on other versions of Ubuntu and even other operating systems
-such as Windows and OS X, but instructions for those have not been included here.
+  The host machine (from which deployment will be made) requires:
 
-The cluster machines (where the services will be deployed) require:
+  - Ubuntu Wily 15.10 – 64 bit (it is possible to run the project on other versions of Ubuntu and even other operating systems such as Windows and OS X, but instructions for those have not been included here)
+  - RAM: 2GB
+  - CPU: Any
+  - DisK: 20GB
 
-- RAM: min. 4GB
-- CPU: min. 4 cores
-- Disk: min. 200GB
+  This host machine will only be used to send commands to the cluster. The cluster machines (where the services will be deployed) require (each):
+
+  - RAM: 4GB+
+  - CPU: 4+ cores
+  - Disk: 150GB+
+
+  Once you set up the host machine (see the "Prerequisites" section), the instructions will guide you
+  to create 3 machines on DigitalOcean or Scaleway.
+
+**2. If you choose to run everything on your workstation**
+
+  The host machine (your workstation) requires:
+
+  - Ubuntu Wily 15.10 – 64 bit (it is possible to run the project on other versions of Ubuntu and even other operating systems such as Windows and OS X, but instructions for those have not been included here)
+  - RAM: 16GB+
+  - CPU: 8+ cores
+  - Disk: 300GB+
+
+  This host machine will only be used to send commands to the cluster. The cluster machines (where the services will be deployed) will actually be virtual machines, deployed using VirtualBox on your workstation.
+
+  Once you set up the host machine (see the "Prerequisites" section), the instructions will guide you
+  to create the 3 VMs inside VirtualBox.
 
 ### Prerequisites
 
