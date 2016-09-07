@@ -263,8 +263,8 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
 
   *c) Using Scaleway (recommended)*
 
-  Or you can provision the machines from Scaleway, which provides affordable high-end servers that are perfect
-  for this project.
+  Or you can provision the machines from [Scaleway](https://www.scaleway.com/), which provides
+  affordable high-end servers that are perfect for this project.
 
   In order to use Scaleway, you'll first need to install the Scaleway driver for Docker Machine:
 
@@ -275,12 +275,13 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
   $ sudo chmod +x /usr/local/bin/docker-machine-driver-scaleway
   ```
 
-  Then:
+  Get your Scaleway credentials (access key and secret key)
+  from [this page](https://cloud.scaleway.com/#/credentials), then deploy 3 machines:
 
   ```
   $ docker-machine create -d scaleway \
     --scaleway-commercial-type=C2L --scaleway-name=opb \
-    --scaleway-organization=a332ff5e-eaaa-4a0c-87b5-dd3d67ae3d91 --scaleway-token=faaae837-4f9b-42f1-9154-54fd38950785 \
+    --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \h0:2376 \
     --swarm --swarm-master \
     --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
     --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
@@ -289,7 +290,7 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
 
   $ docker-machine create -d scaleway \
     --scaleway-commercial-type=C2L --scaleway-name=opb-01 \
-    --scaleway-organization=a332ff5e-eaaa-4a0c-87b5-dd3d67ae3d91 --scaleway-token=faaae837-4f9b-42f1-9154-54fd38950785 \
+    --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \h0:2376 \
     --swarm \
     --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
     --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
@@ -298,7 +299,7 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
 
   $ docker-machine create -d scaleway \
     --scaleway-commercial-type=C2L --scaleway-name=opb-02 \
-    --scaleway-organization=a332ff5e-eaaa-4a0c-87b5-dd3d67ae3d91 --scaleway-token=faaae837-4f9b-42f1-9154-54fd38950785 \
+    --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \h0:2376 \
     --swarm \
     --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
     --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \

@@ -34,6 +34,7 @@ services:
     image: 'aluxian/bitcoin:latest'
     command: 'root /usr/bin/bitcoind -conf=/etc/bitcoin.conf -txindex'
     environment:
+      - constraint:node==opb-01
       - CONF_RPCALLOWIP=0.0.0.0/0
       - CONF_RPCPASSWORD=pass123
       - CONF_RPCUSER=bitcoinrpc
