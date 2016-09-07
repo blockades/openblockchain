@@ -175,7 +175,7 @@ services:
     command: './run_all_vizgen_cron.sh'
     environment:
       - OBC_SPARK_MASTER=spark://spark-master:7077
-      - CASSANDRA_HOST=cassandra-seed
+      - CASSANDRA_HOST=cassandra-seed,cassandra-01,cassandra-02
     ports:
       - '4040:4040'
       - '4041:4041'
