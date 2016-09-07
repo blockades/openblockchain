@@ -9,6 +9,7 @@ The project is split into several services:
 whose role is to index all the blocks and transactions and make them consumable through a JSON RPC interface.
 - **Scanner** connects to the bitcoin service through its APIs and stores all the blocks and transactions
 in the Cassandra database.
+- **Spark** analyses the blockchain data stored in Cassandra.
 - **API** is a REST interface that allows clients to consume the data stored in Cassandra.
 - **Frontend** is the web app used to explore the blockchain and visualise analysed data.
 
@@ -35,7 +36,7 @@ The cluster machines (where the services will be deployed) require:
 
 These must be installed on the host machine only.
 
-1. Install Docker Engine
+**1. Install Docker Engine**
 
   Docker Engine includes the docker client. `docker` will be used to communicate with the docker daemons which
   run on every machine in the cluster.
@@ -70,14 +71,14 @@ These must be installed on the host machine only.
 
   Always up-to-date instructions are [available at docker.com](https://docs.docker.com/engine/installation/linux/ubuntulinux/).
 
-2. Install Docker Machine
+**2. Install Docker Machine**
 
   `docker-machine` is used to provision machines for the cluster.
 
-  Download the Docker Machine 0.7 binary and extract it to your PATH:
+  Download the Docker Machine 0.8 binary and extract it to your PATH:
 
   ```
-  $ sudo curl -L https://github.com/docker/machine/releases/download/v0.7.0/docker-machine-`uname -s`-`uname -m` > /usr/local/bin/docker-machine
+  $ sudo curl -L https://github.com/docker/machine/releases/download/v0.8.0/docker-machine-`uname -s`-`uname -m` > /usr/local/bin/docker-machine
   $ sudo chmod +x /usr/local/bin/docker-machine
   ```
 
@@ -89,7 +90,7 @@ These must be installed on the host machine only.
 
   Always up-to-date instructions are [available at docker.com](https://docs.docker.com/machine/install-machine/).
 
-3. Install Docker Compose
+**3. Install Docker Compose**
 
   Docker Compose is used to manage the services.
 
@@ -106,135 +107,343 @@ These must be installed on the host machine only.
 
   Always up-to-date instructions are [available at docker.com](https://docs.docker.com/compose/install/).
 
+**4. Install VirtualBox**
+
+  Add the repository and the secure key:
+
+  ```
+  $ sudo echo "deb http://download.virtualbox.org/virtualbox/debian wily contrib" > /etc/apt/sources.list
+  $ wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
+  ```
+
+  Install VirtualBox:
+
+  ```
+  $ sudo apt-get update
+  $ sudo apt-get install virtualbox-5.0
+  ```
+
+  Always up-to-date instructions are [available at virtualbox.org](https://www.virtualbox.org/wiki/Linux_Downloads).
+
 ### Cluster Setup
 
-1. Create a Docker Swarm
+The cluster can be deployed locally, using VirtualBox, or in the cloud, using DigitalOcean or Scaleway.
 
-  Create a VirtualBox machine called local on your system:
-
-  ```
-  $ docker-machine create -d virtualbox local
-  ```
-
-  Load the master machine configuration into your shell:
-
-  ```
-  $ eval "$(docker-machine env local)"
-  ```
-
-  Generate a discovery token using the Docker Swarm image:
-
-  ```
-  $ docker pull swarm
-  $ docker run --rm swarm create # output of this command = the discovery token
-  ```
-
-  You can now stop `local`:
-
-  ```
-  $ docker-machine stop local
-  ```
-
-2. Launch the Docker Swarm (cluster)
+**1. Create the discovery service**
 
   *a) Using VirtualBox*
 
-  You can create the cluster locally, using [VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads):
+  Create a machine to host a Consul discovery service:
 
   ```
-  $ docker-machine create -d virtualbox --swarm --swarm-master --swarm-discovery token://<TOKEN-FROM-ABOVE> opb-master
-  $ docker-machine create -d virtualbox --swarm --swarm-discovery token://<TOKEN-FROM-ABOVE> opb-agent-00
-  $ docker-machine create -d virtualbox --swarm --swarm-discovery token://<TOKEN-FROM-ABOVE> opb-agent-01
+  $ docker-machine create -d virtualbox opb-consul
   ```
 
+  Point your docker client to the new machine:
+
   ```
-  TODO: maybe specify RAM above?
+  $ eval $(docker-machine env opb-consul)
   ```
 
-  Note: an internet connection is still required (for Swarm's node discovery service).
+  Create and start the service:
+
+  ```
+  $ docker run --name consul --restart=always -p 8400:8400 -p 8500:8500 \
+    -p 53:53/udp -d progrium/consul -server -bootstrap-expect 1 -ui-dir /ui
+  ```
+
+  *b) Using DigitalOcean*
+
+  Create a machine to host a Consul discovery service:
+
+  ```
+  $ docker-machine create -d digitalocean \
+    --digitalocean-access-token=<DO-TOKEN> \
+    opb-consul
+  ```
+
+  Point your docker client to the new machine:
+
+  ```
+  $ eval $(docker-machine env opb-consul)
+  ```
+
+  Create and start the service:
+
+  ```
+  $ docker run --name consul --restart=always -p 8400:8400 -p 8500:8500 \
+    -p 53:53/udp -d progrium/consul -server -bootstrap-expect 1 -ui-dir /ui
+  ```
+
+  *c) Using Scaleway (recommended)*
+
+  Create a machine to host a Consul discovery service:
+
+  ```
+  $ docker-machine create -d scaleway \
+    --scaleway-commercial-type=C2S --scaleway-name=opb-consul \
+    --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
+    opb-consul
+  ```
+
+  Point your docker client to the new machine:
+
+  ```
+  $ eval $(docker-machine env opb-consul)
+  ```
+
+  Create and start the service:
+
+  ```
+  $ docker run --name consul --restart=always -p 8400:8400 -p 8500:8500 \
+    -p 53:53/udp -d progrium/consul -server -bootstrap-expect 1 -ui-dir /ui
+  ```
+
+**2. Launch the Docker Swarm (cluster)**
+
+  *a) Using VirtualBox*
+
+  You can create the cluster locally, using VirtualBox:
+
+  ```
+  $ docker-machine create -d virtualbox \
+    --virtualbox-memory=8192 --virtualbox-cpu-count=4 --virtualbox-disk-size=160000 \
+    --swarm --swarm-master \
+    --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-advertise=eth0:2376 \
+    opb
+
+  $ docker-machine create -d virtualbox \
+    --virtualbox-memory=8192 --virtualbox-cpu-count=4 --virtualbox-disk-size=160000 \
+    --swarm \
+    --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-advertise=eth0:2376 \
+    opb-01
+
+  $ docker-machine create -d virtualbox \
+    --virtualbox-memory=8192 --virtualbox-cpu-count=4 --virtualbox-disk-size=160000 \
+    --swarm \
+    --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-advertise=eth0:2376 \
+    opb-02
+  ```
 
   *b) Using DigitalOcean*
 
   Or you can provision the machines from DigitalOcean:
 
   ```
-  TODO
+  $ docker-machine create -d digitalocean \
+    --digitalocean-access-token=<DO-TOKEN> --digitalocean-size=16gb \
+    --swarm --swarm-master \
+    --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-advertise=eth0:2376 \
+    opb
+
+  $ docker-machine create -d digitalocean \
+    --digitalocean-access-token=<DO-TOKEN> --digitalocean-size=16gb \
+    --swarm \
+    --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-advertise=eth0:2376 \
+    opb-01
+
+  $ docker-machine create -d digitalocean \
+    --digitalocean-access-token=<DO-TOKEN> --digitalocean-size=16gb \
+    --swarm \
+    --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-advertise=eth0:2376 \
+    opb-02
   ```
 
-  *c) Using Scaleway*
+  *c) Using Scaleway (recommended)*
 
-  Or you can provision the machines from Scaleway:
+  Or you can provision the machines from Scaleway, which provides affordable high-end servers that are perfect
+  for this project. You'll need to [install the driver](https://github.com/scaleway/docker-machine-driver-scaleway)
+  first. Then:
 
   ```
-  TODO
+  $ docker-machine create -d scaleway \
+    --scaleway-commercial-type=C2L --scaleway-name=opb \
+    --scaleway-organization=a332ff5e-eaaa-4a0c-87b5-dd3d67ae3d91 --scaleway-token=faaae837-4f9b-42f1-9154-54fd38950785 \
+    --swarm --swarm-master \
+    --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-advertise=eth0:2376 \
+    opb
+
+  $ docker-machine create -d scaleway \
+    --scaleway-commercial-type=C2L --scaleway-name=opb-01 \
+    --scaleway-organization=a332ff5e-eaaa-4a0c-87b5-dd3d67ae3d91 --scaleway-token=faaae837-4f9b-42f1-9154-54fd38950785 \
+    --swarm \
+    --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-advertise=eth0:2376 \
+    opb-01
+
+  $ docker-machine create -d scaleway \
+    --scaleway-commercial-type=C2L --scaleway-name=opb-02 \
+    --scaleway-organization=a332ff5e-eaaa-4a0c-87b5-dd3d67ae3d91 --scaleway-token=faaae837-4f9b-42f1-9154-54fd38950785 \
+    --swarm \
+    --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
+    --engine-opt cluster-advertise=eth0:2376 \
+    opb-02
   ```
 
-3. Verify the swarm
+  By default the Scaleway machines have a 50GB disk. However, Scaleway also attaches a 250GB
+  SSD, which needs to be mounted manually:
+
+  ```
+  $ printf "opb\nopb-01\nopb-02" | \
+    xargs -n 1 -I CONT_NAME docker-machine ssh CONT_NAME \
+    "echo ; echo ; echo CONT_NAME ;"`
+    `"echo 'Formatting...' ;"`
+    `"yes | mkfs -t ext4 /dev/sda ;"`
+    `"echo 'Mounting...' ;"`
+    `"mkdir -p /openblockchain ;"`
+    `"mount /dev/sda /openblockchain ;"`
+    `"echo 'Adding to fstab...' ;"`
+    `"echo '/dev/sda /openblockchain auto defaults,nobootwait,errors=remount-ro 0 2' >> /etc/fstab ;"`
+    `"echo 'Done' ;"
+  ```
+
+**3. Verify the swarm**
 
   Point your Docker environment to the machine running the swarm master:
 
   ```
-  $ eval $(docker-machine env --swarm opb-master)
+  $ eval $(docker-machine env --swarm opb)
   ```
 
-  Print info:
+  Print cluster info:
 
   ```
   $ docker info
   ```
 
-### Launch services
+  You can also list the IPs that Consul has "discovered":
+
+  ```
+  $ docker run --rm swarm list consul://`docker-machine ip opb-consul`:8500
+  ```
+
+### Launch the services
 
 Point your Docker environment to the machine running the swarm master:
 
 ```
-$ eval $(docker-machine env --swarm opb-master)
+$ eval $(docker-machine env --swarm opb)
 ```
 
-Create a default network:
+Create the default network:
 
 ```
-$ docker network create opbnet
+$ docker network create --driver overlay --subnet 10.0.9.0/24 opbnet
+```
+
+List all networks. `opbnet` should be shown as `overlay`:
+
+```
+$ docker network ls
 ```
 
 1. Cassandra, Bitcoin, Scanner
+
+  `cd` into `scanner/`:
 
   ```
   $ cd scanner/
   ```
 
+  Launch the 3 services. By default, this will create 1 container for each:
+
   ```
-  TODO: dc up -d --build
+  $ docker-compose up -d --build
   ```
 
+  ---
+
+  Let's scale the scanner to use 5 containers:
+
+  ```
+  $ docker-compose scale scanner=5
+  $ vim docker-compose.yml # replace --scale=1 with --scale=5
+  $ docker-compose up -d
+  ```
+
+  Docker will create 5 scanner containers. Having `--scale=5`, each container will start scanning
+  a fifth of the blockchain already downloaded. For example, if by the time you rescale the scanner the bitcoin
+  server downloads 1000 blocks, each scanner instance will start indexing 200 blocks. Which 200 blocks of those 1000
+  is chosen at random (sequencially). After they finish scanning, each scanner will pause for 1 hour and restart.
+
+  There's a small chance that the scanners will only scan the lower part of the blockchain, which doesn't contain
+  any OP_RETURN transactions. If this happens, please restart the scanners:
+
+  ```
+  $ docker-compose restart scanner
+  ```
+
+  To see what each container is doing, watch the logs:
+
+  ```
+  $ docker-compose logs -f --tail 100 scanner  # all containers
+  $ docker logs -f --tail 100 opb_scanner_3    # only container 3
+  ```
+
+  ---
+
+  Now let's see what the bitcoin server has been doing:
+
+  ```
+  $ docker-compose logs -f --tail 100 bitcoin
+  ```
+
+  You should see something like this, which means that it downloaded all the blocks from 0 to 187591 (in this example):
+
+  ```
+  bitcoin_1    | 2016-08-25 15:03:16 UpdateTip: new best=00000000000006edbd5920f77c4aeced0b8d84e25bb5123547bc6125bffcc830  height=187589  log2_work=68.352088  tx=4696226  date=2012-07-05 03:45:13 progress=0.015804  cache=48.7MiB(122719tx)
+  bitcoin_1    | 2016-08-25 15:03:16 UpdateTip: new best=00000000000003f07c1227f986f4687d291af311a346f66247c504b332510931  height=187590  log2_work=68.352117  tx=4696509  date=2012-07-05 03:52:33 progress=0.015805  cache=48.7MiB(122815tx)
+  bitcoin_1    | 2016-08-25 15:03:16 UpdateTip: new best=00000000000002b34a755d25a5fee4c0ad0c018cf94f4b0afef6aabe823d304a  height=187591  log2_work=68.352146  tx=4696593  date=2012-07-05 04:01:11 progress=0.015805  cache=48.7MiB(122839tx)
+  ```
+
+  Let the bitcoin server run for a few hours until it reaches block `330,000`. After that, restart the scanner
+  and make sure it scans blocks above `300,000`. Doing so will ensure that Cassandra has OP_RETURN transactions
+  which Spark can analyse.
+
 2. Spark
+
+  Let's move on to Spark:
 
   ```
   $ cd spark/
   ```
 
+  Launch the master and 2 workers:
+
   ```
-  TODO: dc up -d --build
+  $ docker-compose up -d
   ```
+
+  Start the
 
 3. API
 
   ```
   $ cd api/
-  ```
-
-  ```
-  TODO: dc up -d --build
+  $ docker-compose up -d
   ```
 
 4. Frontend
 
   ```
   $ cd frontend/
-  ```
-
-  ```
-  TODO: dc up -d --build
+  $ docker-compose up -d
   ```
 
 ### next..
@@ -243,3 +452,5 @@ $ docker network create opbnet
 - run spark job
 - demo the api
 - demo the frontend
+- provide some demo visualizations that can be imported into cassandra (without having to run scanner/bitcoin)
+- provide a tool to see how much of the blockchain has been scanned (and which parts?)

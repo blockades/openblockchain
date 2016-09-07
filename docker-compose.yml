@@ -1,0 +1,81 @@
+version: '2'
+services:
+  cassandra:
+    image: cassandra:2.1
+    environment:
+      - CASSANDRA_BROADCAST_ADDRESS=cassandra
+    volumes:
+      - /openblockchain/cassandra/data:/var/lib/cassandra
+    restart: always
+  bitcoin:
+    image: 'aluxian/bitcoin:latest'
+    command: 'root /usr/bin/bitcoind -conf=/etc/bitcoin.conf -txindex'
+    environment:
+      - CONF_RPCALLOWIP=0.0.0.0/0
+      - CONF_RPCPASSWORD=pass123
+      - CONF_RPCUSER=bitcoinrpc
+      - CONF_DBCACHE=2048
+      - CONF_RPCTHREADS=8
+      - CONF_SERVER=1
+    volumes:
+      - /openblockchain/bitcoin/data:/bitcoin/data
+    restart: always
+  scanner:
+    build: .
+    command: 'sbt "run-main org.dyne.danielsan.openblockchain.Driver --scale=1"'
+    environment:
+      - BITCOIN_AUTH=bitcoinrpc:pass123
+      - BITCOIN_SERVER_URL=http://bitcoin:8332
+      - CASSANDRA_HOST=cassandra
+    links:
+      - bitcoin
+      - cassandra
+    volumes:
+      - /openblockchain/scanner/.ivy2:/root/.ivy2
+    restart: always
+  spark-master:
+    image: aluxian/hadoop-spark-master
+    ports:
+      - '8080:8080'
+    volumes:
+      - /openblockchain/jars:/jars
+    restart: always
+  spark-worker-01:
+    image: aluxian/hadoop-spark-worker
+    environment:
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    links:
+      - spark-master
+    ports:
+      - '8080:8081'
+    volumes:
+      - /openblockchain/jars:/jars
+    restart: always
+  # spark-worker-02:
+  #   image: aluxian/hadoop-spark-worker
+  #   environment:
+  #     - SPARK_MASTER_URL=spark://spark-master:7077
+  #   links:
+  #     - spark-master
+  #   ports:
+  #     - '8080:8081'
+  #   volumes:
+  #     - /openblockchain/jars:/jars
+  #   restart: always
+  scanner:
+    build: ./scanner
+    command: 'sbt submit-Counter'
+    environment:
+      - CASSANDRA_HOST=cassandra
+      - OBC_SPARK_MASTER=spark://spark-master:7077
+    links:
+      - spark-master
+    external_links:
+      - scanner_cassandra_1:cassandra
+    volumes:
+      - /openblockchain/scanner/.ivy2:/root/.ivy2
+    restart: always
+networks:
+  default:
+    external:
+      name: opbnet
