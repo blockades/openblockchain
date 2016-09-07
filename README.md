@@ -264,8 +264,18 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
   *c) Using Scaleway (recommended)*
 
   Or you can provision the machines from Scaleway, which provides affordable high-end servers that are perfect
-  for this project. You'll need to [install the driver](https://github.com/scaleway/docker-machine-driver-scaleway)
-  first. Then:
+  for this project.
+
+  In order to use Scaleway, you'll first need to install the Scaleway driver for Docker Machine:
+
+  ```
+  $ curl -sL https://github.com/scaleway/docker-machine-driver-scaleway/releases/download/v1.2.1/docker-machine-driver-scaleway_1.2.1_linux_amd64.tar.gz -O
+  $ tar -xvf docker-machine-driver-scaleway_1.2.1_linux_amd64.tar.gz
+  $ sudo cp docker-machine-driver-scaleway_1.2.1_darwin_amd64/docker-machine-driver-scaleway /usr/local/bin/
+  $ sudo chmod +x /usr/local/bin/docker-machine-driver-scaleway
+  ```
+
+  Then:
 
   ```
   $ docker-machine create -d scaleway \
