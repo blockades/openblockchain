@@ -44,9 +44,9 @@ services:
     volumes:
       - /openblockchain/bitcoin/data:/bitcoin/data
     restart: always
-  scanner:
+  scanner-01:
     build: ./scanner
-    command: 'sbt "run-main org.dyne.danielsan.openblockchain.Driver --scale=1"'
+    command: 'sbt "run-main org.dyne.danielsan.openblockchain.Driver 1 100000"'
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
@@ -59,19 +59,59 @@ services:
     volumes:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
+  scanner-02:
+    build: ./scanner
+    command: 'sbt "run-main org.dyne.danielsan.openblockchain.Driver 330000 400000"'
+    environment:
+      - BITCOIN_AUTH=bitcoinrpc:pass123
+      - BITCOIN_SERVER_URL=http://bitcoin:8332
+      - CASSANDRA_HOST=cassandra-seed
+    depends_on:
+      - bitcoin
+      - cassandra-seed
+      - cassandra-01
+      - cassandra-02
+    volumes:
+      - /openblockchain/scanner/.ivy2:/root/.ivy2
+    restart: always
+  api:
+    build: ./api
+    command: 'sbt "~;jetty:stop;jetty:start"'
+    environment:
+      - CASSANDRA_HOST=cassandra-seed
+    depends_on:
+      - cassandra-seed
+      - cassandra-01
+      - cassandra-02
+    volumes:
+      - /openblockchain/api/.ivy2:/root/.ivy2
+    restart: always
+  frontend:
+    build: ./frontend
+    command: 'npm run start-prod'
+    environment:
+      - APIHOST=api
+      - APIPORT=8080
+    depends_on:
+      - api
+    restart: always
   spark-submit:
     build: ./spark
-    command: 'sbt submit-Counter'
+    command: './run_all_vizgen_cron.sh'
     environment:
       - CASSANDRA_HOST=cassandra-seed
       - OBC_SPARK_MASTER=spark://spark-master:7077
+    ports:
+      - '4040:4040'
+      - '4041:4041'
+      - '4042:4042'
     depends_on:
       - spark-master
       - cassandra-seed
       - cassandra-01
       - cassandra-02
     volumes:
-      - /openblockchain/scanner/.ivy2:/root/.ivy2
+      - /openblockchain/spark-submit/.ivy2:/root/.ivy2
     restart: always
   spark-master:
     image: aluxian/hadoop-spark-master

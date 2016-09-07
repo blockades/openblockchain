@@ -129,6 +129,10 @@ These must be installed on the host machine only.
 
 The cluster can be deployed locally, using VirtualBox, or in the cloud, using DigitalOcean or Scaleway.
 
+**NOTE: It is assumed that the following `docker` commands are run from a folder named `opb`. This matters
+because Docker Compose uses the current working directory's name as the project name which is prepended to
+each container's name.**
+
 **1. Create the discovery service**
 
   *a) Using VirtualBox*
@@ -405,108 +409,78 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
   bitcoin_1    | 2016-08-25 15:03:16 UpdateTip: new best=00000000000002b34a755d25a5fee4c0ad0c018cf94f4b0afef6aabe823d304a  height=187591  log2_work=68.352146  tx=4696593  date=2012-07-05 04:01:11 progress=0.015805  cache=48.7MiB(122839tx)
   ```
 
-  Now let's see the Spark dashboard. Run the following command to get the IPs of machines:
+  Now let's see the Spark dashboards, which should be empty right now.
+  Run the following command to get the dashboard URL of each Spark master and worker:
 
   ```
-  $ docker-machine ip opb
-  $ docker-machine ip opb-01
-  $ docker-machine ip opb-02
+  $ echo "master: "`docker-machine ip opb`":8080"
+  $ echo "worker 1: "`docker-machine ip opb-01`":8081"
+  $ echo "worker 2: "`docker-machine ip opb-02`":8081"
   ```
 
-  And you'll be able to access the dashboard of the Spark master and workers at:
+### Analyse data and test the webapp
+
+**1. Scan the blockchain**
+
+  Show the scanners' logs:
 
   ```
-  <opb-ip>:8080     # master
-  <opb-01-ip>:8081  # worker 1
-  <opb-02-ip>:8081  # worker 2
+  $ docker-compose logs -f --tail 100 scanner-01
+  $ docker-compose logs -f --tail 100 scanner-02
   ```
 
-  # TODO
+  The scanners were configured (in `docker-compose.yml`) so that they index a fixed range of blocks. However,
+  in the beginning, when the bitcoin node hasn't yet reached block 330,000, `scanner-02` (which is configured to
+  scan blocks from 330,000 to 400,000) will not be able to scan anything.
+  Therefore, it'll wait 10 minutes then try again until those blocks are available.
 
-  ---
+**2. Spark analysis**
 
-  Let's scale the scanner to use 5 containers:
-
-  ```
-  $ docker-compose scale scanner=5
-  $ vim docker-compose.yml # replace --scale=1 with --scale=5
-  $ docker-compose up -d
-  ```
-
-  Docker will create 5 scanner containers. Having `--scale=5`, each container will start scanning
-  a fifth of the blockchain already downloaded. For example, if by the time you rescale the scanner the bitcoin
-  server downloads 1000 blocks, each scanner instance will start indexing 200 blocks. Which 200 blocks of those 1000
-  is chosen at random (sequencially). After they finish scanning, each scanner will pause for 1 hour and restart.
-
-  There's a small chance that the scanners will only scan the lower part of the blockchain, which doesn't contain
-  any OP_RETURN transactions. If this happens, please restart the scanners:
+  The `spark-submit` service runs multiple Spark scripts every hour. These scripts generate visualizations
+  (i.e. data points) that the API will provide to the frontend. You can see its progress by looking at the logs:
 
   ```
-  $ docker-compose restart scanner
+  $ docker-compose logs -f --tail 100 spark-submit
   ```
 
-  To see what each container is doing, watch the logs:
+  Let's run a custom script which counts all the blocks and transactions in Cassandra:
 
   ```
-  $ docker-compose logs -f --tail 100 scanner  # all containers
-  $ docker logs -f --tail 100 opb_scanner_3    # only container 3
+  $ docker-compose exec spark-submit sbt submit-Counter
   ```
 
-  ---
-
-  Now let's see what the bitcoin server has been doing:
+  When the script finishes, you should see something like this (ignore the logs that begin with a timestamp):
 
   ```
-  $ docker-compose logs -f --tail 100 bitcoin
+  Blocks: 239699
+  Transactions: 18941698
   ```
 
-  You should see something like this, which means that it downloaded all the blocks from 0 to 187591 (in this example):
+**3. Access the webapp frontend**
+
+  Find the name of the machine the frontend container is running on:
 
   ```
-  bitcoin_1    | 2016-08-25 15:03:16 UpdateTip: new best=00000000000006edbd5920f77c4aeced0b8d84e25bb5123547bc6125bffcc830  height=187589  log2_work=68.352088  tx=4696226  date=2012-07-05 03:45:13 progress=0.015804  cache=48.7MiB(122719tx)
-  bitcoin_1    | 2016-08-25 15:03:16 UpdateTip: new best=00000000000003f07c1227f986f4687d291af311a346f66247c504b332510931  height=187590  log2_work=68.352117  tx=4696509  date=2012-07-05 03:52:33 progress=0.015805  cache=48.7MiB(122815tx)
-  bitcoin_1    | 2016-08-25 15:03:16 UpdateTip: new best=00000000000002b34a755d25a5fee4c0ad0c018cf94f4b0afef6aabe823d304a  height=187591  log2_work=68.352146  tx=4696593  date=2012-07-05 04:01:11 progress=0.015805  cache=48.7MiB(122839tx)
+  $ docker ps --filter "name=opb_frontend_1" --format "{{.Names}}"
   ```
 
-  Let the bitcoin server run for a few hours until it reaches block `330,000`. After that, restart the scanner
-  and make sure it scans blocks above `300,000`. Doing so will ensure that Cassandra has OP_RETURN transactions
-  which Spark can analyse.
-
-2. Spark
-
-  Let's move on to Spark:
+  This will output something like `opb-01/opb_frontend_1`, where the part before the slash is the machine name.
+  Now get the URL of the frontend, replacing `<machine-name-from-above>` accordingly:
 
   ```
-  $ cd spark/
+  $ echo "http://"`docker-machine ip <machine-name-from-above>`":3000"
   ```
 
-  Launch the master and 2 workers:
+**4. Visualizations**
+
+  Depending on whether the `spark-submit` service had time to finish the Spark scripts or not,
+  you might see visualizations in the frontend, at `http://<frontend-ip>:3000/blocks`.
+
+  If visualizations are not yet available, check the progress of `spark-submit`:
 
   ```
-  $ docker-compose up -d
+  $ docker-compose logs -f --tail 100 spark-submit
   ```
 
-  Start the
-
-3. API
-
-  ```
-  $ cd api/
-  $ docker-compose up -d
-  ```
-
-4. Frontend
-
-  ```
-  $ cd frontend/
-  $ docker-compose up -d
-  ```
-
-### next..
-
-- download the blockchain
-- run spark job
-- demo the api
-- demo the frontend
-- provide some demo visualizations that can be imported into cassandra (without having to run scanner/bitcoin)
-- provide a tool to see how much of the blockchain has been scanned (and which parts?)
+  If it's idling, restart the service (`docker-compose restart spark-submit`). Otherwise, it's probably
+  processing data from Cassandra. Let it finish the job and refresh the page.
