@@ -1,9 +1,32 @@
 version: '2'
 services:
-  cassandra:
-    image: cassandra:2.1
+  cassandra-seed:
+    image: aluxian/cassandra-svc
     environment:
-      - CASSANDRA_BROADCAST_ADDRESS=cassandra
+      - constraint:node==opb
+      - CASSANDRA_BROADCAST_ADDRESS=cassandra-seed
+    volumes:
+      - /openblockchain/cassandra/data:/var/lib/cassandra
+    restart: always
+  cassandra-01:
+    image: aluxian/cassandra-svc
+    environment:
+      - constraint:node==opb-01
+      - CASSANDRA_BROADCAST_ADDRESS=cassandra-01
+      - CASSANDRA_SEEDS=cassandra-seed
+    depends_on:
+      - cassandra-seed
+    volumes:
+      - /openblockchain/cassandra/data:/var/lib/cassandra
+    restart: always
+  cassandra-02:
+    image: aluxian/cassandra-svc
+    environment:
+      - constraint:node==opb-02
+      - CASSANDRA_BROADCAST_ADDRESS=cassandra-02
+      - CASSANDRA_SEEDS=cassandra-seed
+    depends_on:
+      - cassandra-seed
     volumes:
       - /openblockchain/cassandra/data:/var/lib/cassandra
     restart: always
@@ -21,59 +44,62 @@ services:
       - /openblockchain/bitcoin/data:/bitcoin/data
     restart: always
   scanner:
-    build: .
+    build: ./scanner
     command: 'sbt "run-main org.dyne.danielsan.openblockchain.Driver --scale=1"'
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
-      - CASSANDRA_HOST=cassandra
-    links:
+      - CASSANDRA_HOST=cassandra-seed
+    depends_on:
       - bitcoin
-      - cassandra
+      - cassandra-seed
+      - cassandra-01
+      - cassandra-02
+    volumes:
+      - /openblockchain/scanner/.ivy2:/root/.ivy2
+    restart: always
+  spark-submit:
+    build: ./spark
+    command: 'sbt submit-Counter'
+    environment:
+      - CASSANDRA_HOST=cassandra-seed
+      - OBC_SPARK_MASTER=spark://spark-master:7077
+    depends_on:
+      - spark-master
+      - cassandra-seed
+      - cassandra-01
+      - cassandra-02
     volumes:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
   spark-master:
     image: aluxian/hadoop-spark-master
+    environment:
+      - constraint:node==opb
     ports:
       - '8080:8080'
-    volumes:
-      - /openblockchain/jars:/jars
     restart: always
   spark-worker-01:
     image: aluxian/hadoop-spark-worker
     environment:
+      - constraint:node==opb-01
       - SPARK_MASTER_URL=spark://spark-master:7077
-    links:
+      - SPARK_PUBLIC_DNS=opb-01
+    depends_on:
       - spark-master
     ports:
-      - '8080:8081'
-    volumes:
-      - /openblockchain/jars:/jars
+      - '8081:8081'
     restart: always
-  # spark-worker-02:
-  #   image: aluxian/hadoop-spark-worker
-  #   environment:
-  #     - SPARK_MASTER_URL=spark://spark-master:7077
-  #   links:
-  #     - spark-master
-  #   ports:
-  #     - '8080:8081'
-  #   volumes:
-  #     - /openblockchain/jars:/jars
-  #   restart: always
-  scanner:
-    build: ./scanner
-    command: 'sbt submit-Counter'
+  spark-worker-02:
+    image: aluxian/hadoop-spark-worker
     environment:
-      - CASSANDRA_HOST=cassandra
-      - OBC_SPARK_MASTER=spark://spark-master:7077
-    links:
+      - constraint:node==opb-02
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_PUBLIC_DNS=opb-02
+    depends_on:
       - spark-master
-    external_links:
-      - scanner_cassandra_1:cassandra
-    volumes:
-      - /openblockchain/scanner/.ivy2:/root/.ivy2
+    ports:
+      - '8081:8081'
     restart: always
 networks:
   default:

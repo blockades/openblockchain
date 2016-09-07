@@ -149,7 +149,7 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
 
   ```
   $ docker run --name consul --restart=always -p 8400:8400 -p 8500:8500 \
-    -p 53:53/udp -d progrium/consul -server -bootstrap-expect 1 -ui-dir /ui
+    -p 53:53/udp -d progrium/consul -server -bootstrap -ui-dir /ui
   ```
 
   *b) Using DigitalOcean*
@@ -335,37 +335,82 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
 
 ### Launch the services
 
-Point your Docker environment to the machine running the swarm master:
+**1. Create the default network**
 
-```
-$ eval $(docker-machine env --swarm opb)
-```
-
-Create the default network:
-
-```
-$ docker network create --driver overlay --subnet 10.0.9.0/24 opbnet
-```
-
-List all networks. `opbnet` should be shown as `overlay`:
-
-```
-$ docker network ls
-```
-
-1. Cassandra, Bitcoin, Scanner
-
-  `cd` into `scanner/`:
+  Point your Docker environment to the machine running the swarm master:
 
   ```
-  $ cd scanner/
+  $ eval $(docker-machine env --swarm opb)
   ```
 
-  Launch the 3 services. By default, this will create 1 container for each:
+  Create an overlay network that allows containers to "see" each other no matter what node they are on:
+
+  ```
+  $ docker network create --driver overlay --subnet 10.0.9.0/24 opbnet
+  ```
+
+  List all networks, `opbnet` should be shown as `overlay`:
+
+  ```
+  $ docker network ls
+  ```
+
+**2. Up!**
+
+  From the root folder (which contains `docker-compose.yml`), run:
 
   ```
   $ docker-compose up -d --build
   ```
+
+  Docker will build images and deploy all the services. By default, it'll launch 3 instances of Cassandra,
+  a Bitcoin node, 1 Spark master, 2 Spark workers, a scanner and one Spark job submitter.
+
+**3. Check the services**
+
+  Show all containers and their status (they should all be "Up"):
+
+  ```
+  $ docker-compose ps
+  ```
+
+  Show the Cassandra cluster status (you should see 3 nodes):
+
+  ```
+  $ docker-compose exec cassandra-seed nodetool status
+  ```
+
+  In the mean time, the bitcoin server should've already scanned a few hundred blocks. Let's see it working live:
+
+  ```
+  $ docker-compose logs -f --tail 100 bitcoin
+  ```
+
+  You should see something like this, which means that it downloaded all the blocks from 0 to 187591 (in this example):
+
+  ```
+  bitcoin_1    | 2016-08-25 15:03:16 UpdateTip: new best=00000000000006edbd5920f77c4aeced0b8d84e25bb5123547bc6125bffcc830  height=187589  log2_work=68.352088  tx=4696226  date=2012-07-05 03:45:13 progress=0.015804  cache=48.7MiB(122719tx)
+  bitcoin_1    | 2016-08-25 15:03:16 UpdateTip: new best=00000000000003f07c1227f986f4687d291af311a346f66247c504b332510931  height=187590  log2_work=68.352117  tx=4696509  date=2012-07-05 03:52:33 progress=0.015805  cache=48.7MiB(122815tx)
+  bitcoin_1    | 2016-08-25 15:03:16 UpdateTip: new best=00000000000002b34a755d25a5fee4c0ad0c018cf94f4b0afef6aabe823d304a  height=187591  log2_work=68.352146  tx=4696593  date=2012-07-05 04:01:11 progress=0.015805  cache=48.7MiB(122839tx)
+  ```
+
+  Now let's see the Spark dashboard. Run the following command to get the IPs of machines:
+
+  ```
+  $ docker-machine ip opb
+  $ docker-machine ip opb-01
+  $ docker-machine ip opb-02
+  ```
+
+  And you'll be able to access the dashboard of the Spark master and workers at:
+
+  ```
+  <opb-ip>:8080     # master
+  <opb-01-ip>:8081  # worker 1
+  <opb-02-ip>:8081  # worker 2
+  ```
+
+  # TODO
 
   ---
 
