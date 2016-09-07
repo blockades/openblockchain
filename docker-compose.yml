@@ -46,7 +46,7 @@ services:
     restart: always
   scanner-01:
     build: ./scanner
-    command: 'sbt "run-main org.dyne.danielsan.openblockchain.Driver 1 100000"'
+    command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 1 100000"'
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
@@ -61,7 +61,7 @@ services:
     restart: always
   scanner-02:
     build: ./scanner
-    command: 'sbt "run-main org.dyne.danielsan.openblockchain.Driver 330000 400000"'
+    command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 330000 400000"'
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
@@ -76,7 +76,7 @@ services:
     restart: always
   api:
     build: ./api
-    command: 'sbt "~;jetty:stop;jetty:start"'
+    command: './sbttask.sh "~;jetty:stop;jetty:start"'
     environment:
       - CASSANDRA_HOST=cassandra-seed
     depends_on:
