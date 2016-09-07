@@ -149,10 +149,6 @@ These must be installed on the host machine only.
 
 The cluster can be deployed locally, using VirtualBox, or in the cloud, using DigitalOcean or Scaleway.
 
-**NOTE: It is assumed that the following `docker` commands are run from a folder named `opb`. This matters
-because Docker Compose uses the current working directory's name as the project name which is prepended to
-each container's name.**
-
 **1. Create the discovery service**
 
   *a) Using VirtualBox*
@@ -481,10 +477,10 @@ each container's name.**
   Find the name of the machine the frontend container is running on:
 
   ```
-  $ docker ps --filter "name=opb_frontend_1" --format "{{.Names}}"
+  $ docker ps --filter "name=frontend" --format "{{.Names}}"
   ```
 
-  This will output something like `opb-01/opb_frontend_1`, where the part before the slash is the machine name.
+  This will output something like `opb-01/frontend`, where the part before the slash is the machine name.
   Now get the URL of the frontend, replacing `<machine-name-from-above>` accordingly:
 
   ```
