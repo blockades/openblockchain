@@ -55,7 +55,10 @@ services:
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
-      - CASSANDRA_HOST=cassandra-seed
+      - CASSANDRA_HOSTS_NUM=3
+      - CASSANDRA_HOST_1=cassandra-seed
+      - CASSANDRA_HOST_2=cassandra-01
+      - CASSANDRA_HOST_3=cassandra-02
     depends_on:
       - bitcoin
       - cassandra-seed
@@ -71,7 +74,10 @@ services:
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
-      - CASSANDRA_HOST=cassandra-seed
+      - CASSANDRA_HOSTS_NUM=3
+      - CASSANDRA_HOST_1=cassandra-seed
+      - CASSANDRA_HOST_2=cassandra-01
+      - CASSANDRA_HOST_3=cassandra-02
     depends_on:
       - bitcoin
       - cassandra-seed
@@ -87,7 +93,10 @@ services:
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
-      - CASSANDRA_HOST=cassandra-seed
+      - CASSANDRA_HOSTS_NUM=3
+      - CASSANDRA_HOST_1=cassandra-seed
+      - CASSANDRA_HOST_2=cassandra-01
+      - CASSANDRA_HOST_3=cassandra-02
     depends_on:
       - bitcoin
       - cassandra-seed
@@ -103,7 +112,10 @@ services:
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
-      - CASSANDRA_HOST=cassandra-seed
+      - CASSANDRA_HOSTS_NUM=3
+      - CASSANDRA_HOST_1=cassandra-seed
+      - CASSANDRA_HOST_2=cassandra-01
+      - CASSANDRA_HOST_3=cassandra-02
     depends_on:
       - bitcoin
       - cassandra-seed
@@ -119,7 +131,10 @@ services:
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
-      - CASSANDRA_HOST=cassandra-seed
+      - CASSANDRA_HOSTS_NUM=3
+      - CASSANDRA_HOST_1=cassandra-seed
+      - CASSANDRA_HOST_2=cassandra-01
+      - CASSANDRA_HOST_3=cassandra-02
     depends_on:
       - bitcoin
       - cassandra-seed
@@ -133,7 +148,10 @@ services:
     container_name: api
     command: './sbttask.sh "~;jetty:stop;jetty:start"'
     environment:
-      - CASSANDRA_HOST=cassandra-seed
+      - CASSANDRA_HOSTS_NUM=3
+      - CASSANDRA_HOST_1=cassandra-seed
+      - CASSANDRA_HOST_2=cassandra-01
+      - CASSANDRA_HOST_3=cassandra-02
     depends_on:
       - cassandra-seed
       - cassandra-01
@@ -156,8 +174,11 @@ services:
     container_name: spark-submit
     command: './run_all_vizgen_cron.sh'
     environment:
-      - CASSANDRA_HOST=cassandra-seed
       - OBC_SPARK_MASTER=spark://spark-master:7077
+      - CASSANDRA_HOSTS_NUM=3
+      - CASSANDRA_HOST_1=cassandra-seed
+      - CASSANDRA_HOST_2=cassandra-01
+      - CASSANDRA_HOST_3=cassandra-02
     ports:
       - '4040:4040'
       - '4041:4041'
