@@ -166,6 +166,8 @@ services:
     environment:
       - APIHOST=api
       - APIPORT=8080
+    ports:
+      - '80:3000'
     depends_on:
       - api
     restart: always
