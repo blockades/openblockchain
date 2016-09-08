@@ -167,7 +167,7 @@ services:
       - APIHOST=api
       - APIPORT=8080
     ports:
-      - '80:3000'
+      - '80:8090'
     depends_on:
       - api
     restart: always
