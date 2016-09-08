@@ -54,7 +54,7 @@ services:
   scanner-01:
     build: ./scanner
     container_name: scanner-01
-    command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 1 150000"'
+    command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 1 250000"'
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
@@ -73,7 +73,7 @@ services:
   scanner-02:
     build: ./scanner
     container_name: scanner-02
-    command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 150000 250000"'
+    command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 250000 350000"'
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
@@ -92,7 +92,7 @@ services:
   scanner-03:
     build: ./scanner
     container_name: scanner-03
-    command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 250000 330000"'
+    command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 350000 385000"'
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
@@ -111,7 +111,7 @@ services:
   scanner-04:
     build: ./scanner
     container_name: scanner-04
-    command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 330000 380000"'
+    command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 385000 406000"'
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
@@ -130,7 +130,7 @@ services:
   scanner-05:
     build: ./scanner
     container_name: scanner-05
-    command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 380000"'
+    command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 406000"'
     environment:
       - BITCOIN_AUTH=bitcoinrpc:pass123
       - BITCOIN_SERVER_URL=http://bitcoin:8332
