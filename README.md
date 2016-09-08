@@ -394,8 +394,16 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
   $ docker-compose up -d --build
   ```
 
-  Docker will build images and deploy all the services. By default, it'll launch 3 instances of Cassandra,
-  a Bitcoin node, 1 Spark master, 2 Spark workers, a scanner and one Spark job submitter.
+  Docker will deploy all the services. By default, it'll launch:
+
+  - 3 instances of Cassandra
+  - 1 Bitcoin node
+  - 1 Spark master
+  - 2 Spark workers
+  - 1 Spark job submitter
+  - 1 scanner container
+  - 1 api container
+  - 1 frontend container
 
 **3. Check the services**
 
