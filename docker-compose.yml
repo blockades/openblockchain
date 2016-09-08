@@ -177,7 +177,7 @@ services:
   frontend:
     build: ./frontend
     container_name: frontend
-    command: 'npm run start-prod'
+    command: 'npm run build && npm run start-prod'
     environment:
       - APIHOST=node-api
       - APIPORT=10010
