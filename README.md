@@ -472,7 +472,22 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
   Transactions: 18941698
   ```
 
-**3. Access the webapp frontend**
+**3. Access the API**
+
+  Find the name of the machine the api container is running on:
+
+  ```
+  $ docker ps --filter "name=node-api" --format "{{.Names}}"
+  ```
+
+  This will output something like `opb-02/api`, where the part before the slash is the machine name.
+  Now get the URL of the api, replacing `<machine-name-from-above>` accordingly:
+
+  ```
+  $ echo "http://"`docker-machine ip <machine-name-from-above>`":10010"
+  ```
+
+**4. Access the web app frontend**
 
   Find the name of the machine the frontend container is running on:
 
@@ -484,13 +499,13 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
   Now get the URL of the frontend, replacing `<machine-name-from-above>` accordingly:
 
   ```
-  $ echo "http://"`docker-machine ip <machine-name-from-above>`":3000"
+  $ echo "http://"`docker-machine ip <machine-name-from-above>`":80"
   ```
 
-**4. Visualizations**
+**5. Visualizations**
 
   Depending on whether the `spark-submit` service had time to finish the Spark scripts or not,
-  you might see visualizations in the frontend, at `http://<frontend-ip>:3000/blocks`.
+  you might see visualizations in the frontend, at `http://<frontend-ip>:80/blocks`.
 
   If visualizations are not yet available, check the progress of `spark-submit`:
 

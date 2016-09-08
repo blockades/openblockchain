@@ -143,33 +143,48 @@ services:
     volumes:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
-  api:
-    build: ./api
-    container_name: api
-    command: './sbttask.sh "~;jetty:stop;jetty:start"'
+  # api:
+  #   build: ./api
+  #   container_name: api
+  #   command: './sbttask.sh "~;jetty:stop;jetty:start"'
+  #   environment:
+  #     - CASSANDRA_HOSTS_NUM=3
+  #     - CASSANDRA_HOST_1=cassandra-seed
+  #     - CASSANDRA_HOST_2=cassandra-01
+  #     - CASSANDRA_HOST_3=cassandra-02
+  #   depends_on:
+  #     - cassandra-seed
+  #     - cassandra-01
+  #     - cassandra-02
+  #   volumes:
+  #     - /openblockchain/api/.ivy2:/root/.ivy2
+  #   restart: always
+  node-api:
+    build: ./node-api
+    container_name: node-api
     environment:
       - CASSANDRA_HOSTS_NUM=3
       - CASSANDRA_HOST_1=cassandra-seed
       - CASSANDRA_HOST_2=cassandra-01
       - CASSANDRA_HOST_3=cassandra-02
+    ports:
+      - '10010:10010'
     depends_on:
       - cassandra-seed
       - cassandra-01
       - cassandra-02
-    volumes:
-      - /openblockchain/api/.ivy2:/root/.ivy2
     restart: always
   frontend:
     build: ./frontend
     container_name: frontend
     command: 'npm run start-prod'
     environment:
-      - APIHOST=api
-      - APIPORT=8080
+      - APIHOST=node-api
+      - APIPORT=10010
     ports:
       - '80:8090'
     depends_on:
-      - api
+      - node-api
     restart: always
   spark-submit:
     build: ./spark
