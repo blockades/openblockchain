@@ -146,22 +146,6 @@ services:
     volumes:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
-  # api:
-  #   build: ./api
-  #   container_name: api
-  #   command: './sbttask.sh "~;jetty:stop;jetty:start"'
-  #   environment:
-  #     - CASSANDRA_HOSTS_NUM=3
-  #     - CASSANDRA_HOST_1=cassandra-seed
-  #     - CASSANDRA_HOST_2=cassandra-01
-  #     - CASSANDRA_HOST_3=cassandra-02
-  #   depends_on:
-  #     - cassandra-seed
-  #     - cassandra-01
-  #     - cassandra-02
-  #   volumes:
-  #     - /openblockchain/api/.ivy2:/root/.ivy2
-  #   restart: always
   node-api:
     build: ./node-api
     container_name: node-api
