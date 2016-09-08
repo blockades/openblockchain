@@ -301,7 +301,7 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
   ```
   $ docker-machine create -d scaleway \
     --scaleway-commercial-type=C2L --scaleway-name=opb \
-    --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \h0:2376 \
+    --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
     --swarm --swarm-master \
     --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
     --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
@@ -310,7 +310,7 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
 
   $ docker-machine create -d scaleway \
     --scaleway-commercial-type=C2L --scaleway-name=opb-01 \
-    --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \h0:2376 \
+    --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
     --swarm \
     --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
     --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
@@ -319,7 +319,7 @@ The cluster can be deployed locally, using VirtualBox, or in the cloud, using Di
 
   $ docker-machine create -d scaleway \
     --scaleway-commercial-type=C2L --scaleway-name=opb-02 \
-    --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \h0:2376 \
+    --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
     --swarm \
     --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
     --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
