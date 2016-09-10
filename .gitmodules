@@ -1,12 +1,12 @@
 [submodule "frontend"]
 	path = frontend
-	url = git@github.com:open-blockchain/frontend.git
+	url = https://github.com/open-blockchain/frontend.git
 [submodule "node-api"]
 	path = node-api
-	url = git@github.com:open-blockchain/node-api.git
+	url = https://github.com/open-blockchain/node-api.git
 [submodule "scanner"]
 	path = scanner
-	url = git@github.com:open-blockchain/scanner.git
+	url = https://github.com/open-blockchain/scanner.git
 [submodule "spark"]
 	path = spark
-	url = git@github.com:open-blockchain/spark.git
+	url = https://github.com/open-blockchain/spark.git
