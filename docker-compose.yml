@@ -4,7 +4,7 @@ services:
     image: aluxian/cassandra-svc
     container_name: cassandra-seed
     environment:
-      - constraint:node==opb
+      - constraint:node==obc
       - CASSANDRA_READ_REQUEST_TIMEOUT_IN_MS=60000
       - CASSANDRA_WRITE_REQUEST_TIMEOUT_IN_MS=60000
       - CASSANDRA_CONCURRENT_READS=64
@@ -24,7 +24,7 @@ services:
     image: aluxian/cassandra-svc
     container_name: cassandra-01
     environment:
-      - constraint:node==opb-01
+      - constraint:node==obc-01
       - CASSANDRA_READ_REQUEST_TIMEOUT_IN_MS=60000
       - CASSANDRA_WRITE_REQUEST_TIMEOUT_IN_MS=60000
       - CASSANDRA_CONCURRENT_READS=64
@@ -47,7 +47,7 @@ services:
     image: aluxian/cassandra-svc
     container_name: cassandra-02
     environment:
-      - constraint:node==opb-02
+      - constraint:node==obc-02
       - CASSANDRA_READ_REQUEST_TIMEOUT_IN_MS=60000
       - CASSANDRA_WRITE_REQUEST_TIMEOUT_IN_MS=60000
       - CASSANDRA_CONCURRENT_READS=64
@@ -71,7 +71,7 @@ services:
     container_name: bitcoin
     command: 'root /usr/bin/bitcoind -conf=/etc/bitcoin.conf -txindex'
     environment:
-      - constraint:node==opb-01
+      - constraint:node==obc-01
       - CONF_RPCALLOWIP=0.0.0.0/0
       - CONF_RPCPASSWORD=pass123
       - CONF_RPCUSER=bitcoinrpc
@@ -226,7 +226,7 @@ services:
     image: aluxian/hadoop-spark-master
     container_name: spark-master
     environment:
-      - constraint:node==opb
+      - constraint:node==obc
     ports:
       - '8080:8080'
     restart: always
@@ -234,9 +234,9 @@ services:
     image: aluxian/hadoop-spark-worker
     container_name: spark-worker-01
     environment:
-      - constraint:node==opb-01
+      - constraint:node==obc-01
       - SPARK_MASTER_URL=spark://spark-master:7077
-      - SPARK_PUBLIC_DNS=opb-01
+      - SPARK_PUBLIC_DNS=obc-01
     depends_on:
       - spark-master
     ports:
@@ -246,9 +246,9 @@ services:
     image: aluxian/hadoop-spark-worker
     container_name: spark-worker-02
     environment:
-      - constraint:node==opb-02
+      - constraint:node==obc-02
       - SPARK_MASTER_URL=spark://spark-master:7077
-      - SPARK_PUBLIC_DNS=opb-02
+      - SPARK_PUBLIC_DNS=obc-02
     depends_on:
       - spark-master
     ports:
@@ -257,4 +257,4 @@ services:
 networks:
   default:
     external:
-      name: opbnet
+      name: obcnet
