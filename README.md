@@ -25,7 +25,7 @@ Due to the computing power and disk space requirements, the project was designed
 
 ### Prerequisites
 
-The following instructions guide you through setting up your host machine.
+The following instructions guide you through setting up your host machine with Ubuntu and docker-engine, docker-machine and docker-compose.
 
 #### Setting up the host machine
 
@@ -125,6 +125,18 @@ Check the installation by displaying the Compose version:
   ```
 
 Always up-to-date instructions are [available at docker.com](https://docs.docker.com/compose/install/).
+
+#### Congratulations!... and a recap
+
+You have now configured your host machine. You have:
+
+  - installed VirtualBox
+  - installed Ubuntu 16.04.1 LTS 64-bit on a virtual machine (the host machine)
+  - installed Docker Engine
+  - installed Docker Machine
+  - installed Docker Compose
+
+This will allow you to manage all the microservices which constitue the openblockchain application.
 
 ### Cluster Setup
 
