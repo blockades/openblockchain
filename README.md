@@ -136,7 +136,9 @@ You have now configured your host machine. You have:
   - installed Docker Machine
   - installed Docker Compose
 
-This will allow you to manage all the microservices which constitue the openblockchain application.
+This will allow you to manage all the microservices which constitue the openblockchain application from within the host machine.
+
+---
 
 ### Cluster Setup
 
