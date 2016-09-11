@@ -137,7 +137,7 @@ The following instructions guide you through deploying the cluster in the cloud,
 In order to use Scaleway, you'll first need to install the Scaleway driver for Docker Machine:
 
   ```
-  $ curl -sL https://github.com/scaleway/docker-machine-driver-scaleway/releases/download/v1.2.1/docker-machine-driver-scaleway_1.2.1_linux_amd64.tar.gz -O
+  $ wget https://github.com/scaleway/docker-machine-driver-scaleway/releases/download/v1.2.1/docker-machine-driver-scaleway_1.2.1_linux_amd64.tar.gz
   $ tar -xvf docker-machine-driver-scaleway_1.2.1_linux_amd64.tar.gz
   $ sudo cp docker-machine-driver-scaleway_1.2.1_linux_amd64/docker-machine-driver-scaleway /usr/local/bin/
   $ sudo chmod +x /usr/local/bin/docker-machine-driver-scaleway
