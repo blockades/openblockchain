@@ -142,7 +142,18 @@ This will allow you to manage all the microservices which constitue the openbloc
 
 ### Cluster Setup
 
-The following instructions guide you through deploying the cluster in the cloud, using Scaleway.
+The following instructions guide you through deploying the cluster in the cloud, using Scaleway. The cluster will contain the following services:
+
+- 3 instances of Cassandra
+- 1 Bitcoin node
+- 1 Spark master
+- 2 Spark workers
+- 1 Spark job submitter
+- 1 scanner container
+- 1 api container
+- 1 frontend container
+
+The microservices are managed via docker-* on your host machine.
 
 **1. Create the discovery service**
 
