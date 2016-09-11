@@ -148,15 +148,15 @@ Create a machine to host a Consul discovery service:
 
   ```
   $ docker-machine create -d scaleway \
-    --scaleway-commercial-type=C2S --scaleway-name=opb-consul \
+    --scaleway-commercial-type=C2S --scaleway-name=obc-consul \
     --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
-    opb-consul
+    obc-consul
   ```
 
 Point your docker client to the new machine:
 
   ```
-  $ eval $(docker-machine env opb-consul)
+  $ eval $(docker-machine env obc-consul)
   ```
 
 Create and start the service:
@@ -176,37 +176,37 @@ Get your Scaleway credentials (access key and secret key) from [this page](https
 
   ```
   $ docker-machine create -d scaleway \
-    --scaleway-commercial-type=C2L --scaleway-name=opb \
+    --scaleway-commercial-type=C2L --scaleway-name=obc \
     --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
     --swarm --swarm-master \
-    --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
-    --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
+    --swarm-discovery consul://`docker-machine ip obc-consul`:8500 \
+    --engine-opt cluster-store=consul://`docker-machine ip obc-consul`:8500 \
     --engine-opt cluster-advertise=eth0:2376 \
-    opb
+    obc
 
   $ docker-machine create -d scaleway \
-    --scaleway-commercial-type=C2L --scaleway-name=opb-01 \
+    --scaleway-commercial-type=C2L --scaleway-name=obc-01 \
     --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
     --swarm \
-    --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
-    --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
+    --swarm-discovery consul://`docker-machine ip obc-consul`:8500 \
+    --engine-opt cluster-store=consul://`docker-machine ip obc-consul`:8500 \
     --engine-opt cluster-advertise=eth0:2376 \
-    opb-01
+    obc-01
 
   $ docker-machine create -d scaleway \
-    --scaleway-commercial-type=C2L --scaleway-name=opb-02 \
+    --scaleway-commercial-type=C2L --scaleway-name=obc-02 \
     --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
     --swarm \
-    --swarm-discovery consul://`docker-machine ip opb-consul`:8500 \
-    --engine-opt cluster-store=consul://`docker-machine ip opb-consul`:8500 \
+    --swarm-discovery consul://`docker-machine ip obc-consul`:8500 \
+    --engine-opt cluster-store=consul://`docker-machine ip obc-consul`:8500 \
     --engine-opt cluster-advertise=eth0:2376 \
-    opb-02
+    obc-02
   ```
 
 By default the Scaleway machines have a 50GB disk. However, Scaleway also attaches a 250GB SSD, which needs to be mounted manually:
 
   ```
-  $ printf "opb\nopb-01\nopb-02" | \
+  $ printf "obc\nobc-01\nobc-02" | \
     xargs -n 1 -I CONT_NAME docker-machine ssh CONT_NAME \
     "echo ; echo ; echo CONT_NAME ;"`
     `"echo 'Formatting...' ;"`
@@ -224,7 +224,7 @@ By default the Scaleway machines have a 50GB disk. However, Scaleway also attach
 Point your Docker environment to the machine running the swarm master:
 
   ```
-  $ eval $(docker-machine env --swarm opb)
+  $ eval $(docker-machine env --swarm obc)
   ```
 
 Print cluster info:
@@ -236,7 +236,7 @@ Print cluster info:
 You can also list the IPs that Consul has "discovered":
 
   ```
-  $ docker run --rm swarm list consul://`docker-machine ip opb-consul`:8500
+  $ docker run --rm swarm list consul://`docker-machine ip obc-consul`:8500
   ```
 
 ### Launch the services
@@ -246,16 +246,16 @@ You can also list the IPs that Consul has "discovered":
 Point your Docker environment to the machine running the swarm master:
 
   ```
-  $ eval $(docker-machine env --swarm opb)
+  $ eval $(docker-machine env --swarm obc)
   ```
 
 Create an overlay network that allows containers to "see" each other no matter what node they are on:
 
   ```
-  $ docker network create --driver overlay --subnet 10.0.9.0/24 opbnet
+  $ docker network create --driver overlay --subnet 10.0.9.0/24 obcnet
   ```
 
-List all networks, `opbnet` should be shown as `overlay`:
+List all networks, `obcnet` should be shown as `overlay`:
 
   ```
   $ docker network ls
@@ -328,9 +328,9 @@ You should see something like this, which means that it downloaded all the block
 Now let's see the Spark dashboards, which should be empty right now. Run the following command to get the dashboard URL of each Spark master and worker:
 
   ```
-  $ echo "master: "`docker-machine ip opb`":8080"
-  $ echo "worker 1: "`docker-machine ip opb-01`":8081"
-  $ echo "worker 2: "`docker-machine ip opb-02`":8081"
+  $ echo "master: "`docker-machine ip obc`":8080"
+  $ echo "worker 1: "`docker-machine ip obc-01`":8081"
+  $ echo "worker 2: "`docker-machine ip obc-02`":8081"
   ```
 
 ### Analyse data and test the webapp
@@ -375,7 +375,7 @@ Find the name of the machine the api container is running on:
   $ docker ps --filter "name=node-api" --format "{{.Names}}"
   ```
 
-This will output something like `opb-02/api`, where the part before the slash is the machine name.
+This will output something like `obc-02/api`, where the part before the slash is the machine name.
 
 Now get the URL of the api, replacing `<machine-name-from-above>` accordingly:
 
@@ -391,7 +391,7 @@ Find the name of the machine the frontend container is running on:
   $ docker ps --filter "name=frontend" --format "{{.Names}}"
   ```
 
-This will output something like `opb-01/frontend`, where the part before the slash is the machine name.
+This will output something like `obc-01/frontend`, where the part before the slash is the machine name.
 
 Now get the URL of the frontend, replacing `<machine-name-from-above>` accordingly:
 
