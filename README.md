@@ -233,6 +233,14 @@ By default the Scaleway machines have a 50GB disk. However, Scaleway also attach
     `"echo 'Done' ;"
   ```
 
+This additional storage will not be visible within the UI of your Scaleway account. You can manually check to verify the additional storage has been mounted (in this case checking obc):
+
+```
+$ docker-machine ssh obc
+$ cat /etc/fstab
+$ ls -al /openblockchain
+```
+
 **3. Verify the swarm**
 
 Point your Docker environment to the machine running the swarm master:
