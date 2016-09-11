@@ -50,7 +50,7 @@ The host machine will only be used to send commands to the cluster. The cluster 
   - CPU: 4+ cores
   - Disk: 150GB+
 
-TODO!!!  Once you set up the host machine (see the "Prerequisites" section), the instructions will guide you through the steps required to create 3 machines on Scaleway.
+Once you set up the host machine (see the follwing "Prerequisites" section), the "Cluster Setup" instructions will guide you through the steps required to create 3 machines on Scaleway.
 
 #### Installing the prerequisites on the host machine
 
