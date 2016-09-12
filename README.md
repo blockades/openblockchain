@@ -468,25 +468,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### Dependencies
 
 [API Service](https://github.com/open-blockchain/api) dependencies
+
 https://github.com/scalatra/scalatra
+
 Copyright (c) Alan Dipert <alan.dipert@gmail.com>. All rights reserved.
 
+---
+
 [Frontend Service](https://github.com/open-blockchain/frontend) dependencies
+
 https://github.com/gaearon/react-redux-universal-hot-example
+
 The MIT License (MIT), Copyright (c) 2015 Erik Rasmussen
 
+---
+
 [node-api](https://github.com/open-blockchain/node-api) dependencies
+
 https://github.com/nodejs/node/blob/master/LICENSE
+
 Copyright Node.js contributors. All rights reserved.
 
+---
+
 [openblockchain Service](https://github.com/open-blockchain/openblockchain) dependencies
+
 https://github.com/docker/docker
+
 Apache License, Version 2.0, January 2004, http://www.apache.org/licenses/
 
+---
+
 [Scanner Service](https://github.com/open-blockchain/scanner) dependencies
+
 https://github.com/outworkers/phantom
+
 Copyright 2013-2016 Websudos, Limited. , All rights reserved.
 
+---
+
 [Spark Service](https://github.com/open-blockchain/spark) dependencies
+
 https://github.com/apache/spark
+
 Apache License, Version 2.0, January 2004, http://www.apache.org/licenses/
