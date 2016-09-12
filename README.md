@@ -443,3 +443,50 @@ If visualizations are not yet available, check the progress of `spark-submit`:
   ```
 
 If it's idling, restart the service (`docker-compose restart spark-submit`). Otherwise, it's probably processing data from Cassandra. Let it finish the job and refresh the page (go away and make a cup of tea - in 60 mins it will certainly have crunched some numbers).
+
+## License
+
+Copyright (C) 2016 Dan Hassan
+
+Designed, developed and maintained by Dan Hassan <daniel.san@dyne.org>
+
+```
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+```
+
+### Dependencies
+
+[API Service](https://github.com/open-blockchain/api) dependencies
+https://github.com/scalatra/scalatra
+Copyright (c) Alan Dipert <alan.dipert@gmail.com>. All rights reserved.
+
+[Frontend Service](https://github.com/open-blockchain/frontend) dependencies
+https://github.com/gaearon/react-redux-universal-hot-example
+The MIT License (MIT), Copyright (c) 2015 Erik Rasmussen
+
+[node-api](https://github.com/open-blockchain/node-api) dependencies
+https://github.com/nodejs/node/blob/master/LICENSE
+Copyright Node.js contributors. All rights reserved.
+
+[openblockchain Service](https://github.com/open-blockchain/openblockchain) dependencies
+https://github.com/docker/docker
+Apache License, Version 2.0, January 2004, http://www.apache.org/licenses/
+
+[Scanner Service](https://github.com/open-blockchain/scanner) dependencies
+https://github.com/outworkers/phantom
+Copyright 2013-2016 Websudos, Limited. , All rights reserved.
+
+[Spark Service](https://github.com/open-blockchain/spark) dependencies
+https://github.com/apache/spark
+Apache License, Version 2.0, January 2004, http://www.apache.org/licenses/
