@@ -63,6 +63,7 @@ services:
       - CASSANDRA_SEEDS=cassandra-seed
     depends_on:
       - cassandra-seed
+      - cassandra-01
     volumes:
       - /openblockchain/cassandra/data:/var/lib/cassandra
     restart: always
