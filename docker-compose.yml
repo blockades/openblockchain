@@ -83,7 +83,7 @@ services:
       - /openblockchain/bitcoin/data:/bitcoin/data
     restart: always
   scanner-01:
-    build: openblockchaininfo/scanner
+    image: openblockchaininfo/scanner
     container_name: scanner-01
     command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 1 250000"'
     environment:
@@ -102,7 +102,7 @@ services:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
   scanner-02:
-    build: openblockchaininfo/scanner
+    image: openblockchaininfo/scanner
     container_name: scanner-02
     command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 250000 350000"'
     environment:
@@ -121,7 +121,7 @@ services:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
   scanner-03:
-    build: openblockchaininfo/scanner
+    image: openblockchaininfo/scanner
     container_name: scanner-03
     command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 350000 385000"'
     environment:
@@ -140,7 +140,7 @@ services:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
   scanner-04:
-    build: openblockchaininfo/scanner
+    image: openblockchaininfo/scanner
     container_name: scanner-04
     command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 385000 406000"'
     environment:
@@ -159,7 +159,7 @@ services:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
   scanner-05:
-    build: openblockchaininfo/scanner
+    image: openblockchaininfo/scanner
     container_name: scanner-05
     command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 406000"'
     environment:
@@ -178,7 +178,7 @@ services:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
   node-api:
-    build: openblockchaininfo/node-api
+    image: openblockchaininfo/node-api
     container_name: node-api
     environment:
       - CASSANDRA_HOSTS_NUM=3
@@ -193,7 +193,7 @@ services:
       - cassandra-02
     restart: always
   frontend:
-    build: openblockchaininfo/frontend
+    image: openblockchaininfo/frontend
     container_name: frontend
     command: 'npm run build && npm run start-prod'
     environment:
@@ -205,7 +205,7 @@ services:
       - node-api
     restart: always
   spark-submit:
-    build: openblockchaininfo/spark
+    image: openblockchaininfo/spark
     container_name: spark-submit
     command: './run_all_vizgen_cron.sh'
     environment:
@@ -244,7 +244,7 @@ services:
       - '8081:8081'
     restart: always
   spark-worker-02:
-    image: openblockchaininfo/docker-spark-worker
+    build: openblockchaininfo/docker-spark-worker
     container_name: spark-worker-02
     environment:
       - constraint:node==obc-02
