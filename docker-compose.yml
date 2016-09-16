@@ -1,7 +1,7 @@
 version: '2'
 services:
   cassandra-seed:
-    image: aluxian/cassandra-svc
+    image: openblockchaininfo/docker-cassandra-svc
     container_name: cassandra-seed
     environment:
       - constraint:node==obc
@@ -21,7 +21,7 @@ services:
       - /openblockchain/cassandra/data:/var/lib/cassandra
     restart: always
   cassandra-01:
-    image: aluxian/cassandra-svc
+    image: openblockchaininfo/docker-cassandra-svc
     container_name: cassandra-01
     environment:
       - constraint:node==obc-01
@@ -44,7 +44,7 @@ services:
       - /openblockchain/cassandra/data:/var/lib/cassandra
     restart: always
   cassandra-02:
-    image: aluxian/cassandra-svc
+    image: openblockchaininfo/docker-cassandra-svc
     container_name: cassandra-02
     environment:
       - constraint:node==obc-02
@@ -68,7 +68,7 @@ services:
       - /openblockchain/cassandra/data:/var/lib/cassandra
     restart: always
   bitcoin:
-    image: 'aluxian/bitcoin:latest'
+    image: 'openblockchaininfo/docker-bitcoin:latest'
     container_name: bitcoin
     command: 'root /usr/bin/bitcoind -conf=/etc/bitcoin.conf -txindex'
     environment:
@@ -83,7 +83,7 @@ services:
       - /openblockchain/bitcoin/data:/bitcoin/data
     restart: always
   scanner-01:
-    build: ./scanner
+    build: openblockchaininfo/scanner
     container_name: scanner-01
     command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 1 250000"'
     environment:
@@ -102,7 +102,7 @@ services:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
   scanner-02:
-    build: ./scanner
+    build: openblockchaininfo/scanner
     container_name: scanner-02
     command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 250000 350000"'
     environment:
@@ -121,7 +121,7 @@ services:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
   scanner-03:
-    build: ./scanner
+    build: openblockchaininfo/scanner
     container_name: scanner-03
     command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 350000 385000"'
     environment:
@@ -140,7 +140,7 @@ services:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
   scanner-04:
-    build: ./scanner
+    build: openblockchaininfo/scanner
     container_name: scanner-04
     command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 385000 406000"'
     environment:
@@ -159,7 +159,7 @@ services:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
   scanner-05:
-    build: ./scanner
+    build: openblockchaininfo/scanner
     container_name: scanner-05
     command: './sbttask.sh "run-main org.dyne.danielsan.openblockchain.Driver 406000"'
     environment:
@@ -178,7 +178,7 @@ services:
       - /openblockchain/scanner/.ivy2:/root/.ivy2
     restart: always
   node-api:
-    build: ./node-api
+    build: openblockchaininfo/node-api
     container_name: node-api
     environment:
       - CASSANDRA_HOSTS_NUM=3
@@ -193,7 +193,7 @@ services:
       - cassandra-02
     restart: always
   frontend:
-    build: ./frontend
+    build: openblockchaininfo/frontend
     container_name: frontend
     command: 'npm run build && npm run start-prod'
     environment:
@@ -205,7 +205,7 @@ services:
       - node-api
     restart: always
   spark-submit:
-    build: ./spark
+    build: openblockchaininfo/spark
     container_name: spark-submit
     command: './run_all_vizgen_cron.sh'
     environment:
@@ -224,7 +224,7 @@ services:
       - /openblockchain/spark-submit/.ivy2:/root/.ivy2
     restart: always
   spark-master:
-    image: aluxian/hadoop-spark-master
+    image: openblockchaininfo/docker-spark-master
     container_name: spark-master
     environment:
       - constraint:node==obc
@@ -232,7 +232,7 @@ services:
       - '8080:8080'
     restart: always
   spark-worker-01:
-    image: aluxian/hadoop-spark-worker
+    image: openblockchaininfo/docker-spark-worker
     container_name: spark-worker-01
     environment:
       - constraint:node==obc-01
@@ -244,7 +244,7 @@ services:
       - '8081:8081'
     restart: always
   spark-worker-02:
-    image: aluxian/hadoop-spark-worker
+    image: openblockchaininfo/docker-spark-worker
     container_name: spark-worker-02
     environment:
       - constraint:node==obc-02

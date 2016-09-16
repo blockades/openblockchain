@@ -13,6 +13,8 @@ The project is split into several services:
 
 Each service contains 1 or more containers and can be scaled independently from each other.
 
+All containers are hosted: https://hub.docker.com/u/openblockchaininfo/
+
 ### Introduction to the following instructions
 
 The following instructions will walk you through installing the entire openblockchain application including all system dependencies and requirements allowing you to run openblockchain from most base systems (Linux, OSX, Windows).
