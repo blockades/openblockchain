@@ -244,7 +244,7 @@ services:
       - '8081:8081'
     restart: always
   spark-worker-02:
-    build: openblockchaininfo/docker-spark-worker
+    image: openblockchaininfo/docker-spark-worker
     container_name: spark-worker-02
     environment:
       - constraint:node==obc-02
