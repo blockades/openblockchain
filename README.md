@@ -13,7 +13,7 @@ The project is split into several services:
 
 Each service contains 1 or more containers and can be scaled independently from each other.
 
-All containers are hosted: https://hub.docker.com/u/openblockchaininfo/
+All docker images are hosted: https://hub.docker.com/u/openblockchaininfo/
 
 ### Introduction to the following instructions
 
@@ -23,7 +23,7 @@ The instructions will start by guiding you through installing Ubuntu on VirtualB
 
 ### System requirements
 
-Due to the computing power and disk space requirements, the project was designed to be run on several machines, preferably in a cloud.
+Due to the computing power and disk space requirements, the data storage and processing for the project was designed to be run on several machines, preferably in a cloud with local management from a host machine.
 
 ### Prerequisites
 
@@ -46,13 +46,15 @@ You need to create a new virtual machine using VirtualBox. The virtual machine (
 
 When you start the host machine for the first time select Ubuntu 16.04.1 LTS - 64 bit (which you downloaded in the previous step) as the start-up disk (it is possible to run the project on other versions of Ubuntu and even other operating systems such as Windows and OS X, but instructions for those have not been included here).
 
-The host machine will only be used to send commands to the cluster. The cluster machines (where the services will be deployed) require (each):
+The host machine will only be used to send commands to the cluster.
+
+The cluster machines (where the services will be deployed) require (each):
 
   - RAM: 4GB+
   - CPU: 4+ cores
   - Disk: 150GB+
 
-Once you set up the host machine (see the follwing "Prerequisites" section), the "Cluster Setup" instructions will guide you through the steps required to create 3 machines on Scaleway.
+Once you set up the host machine (see the following "Prerequisites" section), the "Cluster Setup" instructions will guide you through the steps required to create 3 machines on Scaleway.
 
 #### Installing the prerequisites on the host machine
 
@@ -159,7 +161,7 @@ The microservices are managed via docker-* on your host machine.
 
 **1. Create the discovery service**
 
-*Using Scaleway (recommended)*
+*Using Scaleway*
 
 In order to use Scaleway, you'll first need to install the Scaleway driver for Docker Machine:
 
@@ -195,7 +197,7 @@ Create and start the service:
 
 **2. Launch the Docker Swarm (cluster)**
 
-*Using Scaleway (recommended)*
+*Using Scaleway*
 
 You can provision the machines from [Scaleway](https://www.scaleway.com/), which provides affordable high-end servers that are perfect for this project.
 
@@ -277,12 +279,6 @@ You can also list the IPs that Consul has "discovered":
 ### Launch the services
 
 **1. Create the default network**
-
-Point your Docker environment to the machine running the swarm master:
-
-  ```
-  $ eval $(docker-machine env --swarm obc)
-  ```
 
 Create an overlay network that allows containers to "see" each other no matter what node they are on:
 
