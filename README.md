@@ -153,7 +153,7 @@ The following instructions guide you through deploying the cluster in the cloud,
 - 1 Spark master
 - 2 Spark workers
 - 1 Spark job submitter
-- 1 scanner container
+- 5 scanner containers
 - 1 api container
 - 1 frontend container
 
@@ -338,7 +338,7 @@ Docker will deploy all the services. By default, it'll launch:
   - 1 Spark master
   - 2 Spark workers
   - 1 Spark job submitter
-  - 1 scanner container
+  - 5 scanner container
   - 1 api container
   - 1 frontend container
 
