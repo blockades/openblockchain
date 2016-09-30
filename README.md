@@ -239,21 +239,12 @@ Get your Scaleway credentials (access key and secret key) from [this page](https
       --engine-opt cluster-store=consul://`docker-machine ip obc-consul`:8500 \
       --engine-opt cluster-advertise=eth0:2376 \
       obc-03
-
-    $ docker-machine create -d scaleway \
-      --scaleway-commercial-type=C2L --scaleway-name=obc-04 \
-      --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
-      --swarm \
-      --swarm-discovery consul://`docker-machine ip obc-consul`:8500 \
-      --engine-opt cluster-store=consul://`docker-machine ip obc-consul`:8500 \
-      --engine-opt cluster-advertise=eth0:2376 \
-      obc-04
   ```
 
 By default the Scaleway machines have a 50GB disk. However, Scaleway can also attach a 250GB SSD, which needs to be mounted manually:
 
   ```
-  $ printf "obc\nobc-01\nobc-02\nobc-03\nobc-04" | \
+  $ printf "obc\nobc-01\nobc-02\nobc-03" | \
     xargs -n 1 -I CONT_NAME docker-machine ssh CONT_NAME \
     "echo ; echo ; echo CONT_NAME ;"`
     `"echo 'Formatting...' ;"`
