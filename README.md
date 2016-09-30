@@ -148,7 +148,7 @@ This will allow you to manage all the microservices which constitue the openbloc
 
 The following instructions guide you through deploying the cluster in the cloud, using Scaleway. The cluster will contain the following services:
 
-- 3 instances of Cassandra
+- 4 instances of Cassandra
 - 1 Bitcoin node
 - 1 Spark master
 - 2 Spark workers
@@ -230,12 +230,30 @@ Get your Scaleway credentials (access key and secret key) from [this page](https
     --engine-opt cluster-store=consul://`docker-machine ip obc-consul`:8500 \
     --engine-opt cluster-advertise=eth0:2376 \
     obc-02
+
+    $ docker-machine create -d scaleway \
+      --scaleway-commercial-type=C2L --scaleway-name=obc-03 \
+      --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
+      --swarm \
+      --swarm-discovery consul://`docker-machine ip obc-consul`:8500 \
+      --engine-opt cluster-store=consul://`docker-machine ip obc-consul`:8500 \
+      --engine-opt cluster-advertise=eth0:2376 \
+      obc-03
+
+    $ docker-machine create -d scaleway \
+      --scaleway-commercial-type=C2L --scaleway-name=obc-04 \
+      --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
+      --swarm \
+      --swarm-discovery consul://`docker-machine ip obc-consul`:8500 \
+      --engine-opt cluster-store=consul://`docker-machine ip obc-consul`:8500 \
+      --engine-opt cluster-advertise=eth0:2376 \
+      obc-04
   ```
 
-By default the Scaleway machines have a 50GB disk. However, Scaleway also attaches a 250GB SSD, which needs to be mounted manually:
+By default the Scaleway machines have a 50GB disk. However, Scaleway can also attach a 250GB SSD, which needs to be mounted manually:
 
   ```
-  $ printf "obc\nobc-01\nobc-02" | \
+  $ printf "obc\nobc-01\nobc-02\nobc-03\nobc-04" | \
     xargs -n 1 -I CONT_NAME docker-machine ssh CONT_NAME \
     "echo ; echo ; echo CONT_NAME ;"`
     `"echo 'Formatting...' ;"`
@@ -294,12 +312,8 @@ List all networks, `obcnet` should be shown as `overlay`:
 
 #### Getting openblockchain code
 
-openblockchain has been designed with multiple microservices which are linked in the main Docker engine as git submodules.
-
-The following command clones the project and all required gitmodules.
-
   ```
-  $ git clone --recursive https://github.com/open-blockchain/openblockchain.git
+  $ git clone https://github.com/open-blockchain/openblockchain.git
   ```
 
 Once you have cloned the repo make sure to go into the directory.
@@ -319,7 +333,7 @@ From the root folder (which contains `docker-compose.yml`), run:
 
 Docker will deploy all the services. By default, it'll launch:
 
-  - 3 instances of Cassandra
+  - 4 instances of Cassandra
   - 1 Bitcoin node
   - 1 Spark master
   - 2 Spark workers
