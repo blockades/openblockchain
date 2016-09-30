@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 services:
   cassandra-seed:
     image: openblockchaininfo/docker-cassandra-svc
