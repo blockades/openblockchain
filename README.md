@@ -148,7 +148,7 @@ This will allow you to manage all the microservices which constitue the openbloc
 
 The following instructions guide you through deploying the cluster in the cloud, using Scaleway. The cluster will contain the following services:
 
-- 4 instances of Cassandra
+- 3 instances of Cassandra
 - 1 Bitcoin node
 - 1 Spark master
 - 2 Spark workers
@@ -333,7 +333,7 @@ From the root folder (which contains `docker-compose.yml`), run:
 
 Docker will deploy all the services. By default, it'll launch:
 
-  - 4 instances of Cassandra
+  - 3 instances of Cassandra
   - 1 Bitcoin node
   - 1 Spark master
   - 2 Spark workers
