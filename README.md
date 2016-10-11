@@ -148,7 +148,7 @@ This will allow you to manage all the microservices which constitue the openbloc
 
 The following instructions guide you through deploying the cluster in the cloud, using Scaleway. The cluster will contain the following services:
 
-- 3 instances of Cassandra
+- 7 instances of Cassandra
 - 1 Bitcoin node
 - 1 Spark master
 - 2 Spark workers
@@ -201,7 +201,7 @@ Create and start the service:
 
 You can provision the machines from [Scaleway](https://www.scaleway.com/), which provides affordable high-end servers that are perfect for this project.
 
-Get your Scaleway credentials (access key and secret key) from [this page](https://cloud.scaleway.com/#/credentials), then deploy 3 machines:
+Get your Scaleway credentials (access key and secret key) from [this page](https://cloud.scaleway.com/#/credentials), then deploy 7 machines:
 
   ```
   $ docker-machine create -d scaleway \
@@ -239,12 +239,40 @@ Get your Scaleway credentials (access key and secret key) from [this page](https
       --engine-opt cluster-store=consul://`docker-machine ip obc-consul`:8500 \
       --engine-opt cluster-advertise=eth0:2376 \
       obc-03
+
+    $ docker-machine create -d scaleway \
+      --scaleway-commercial-type=C2L --scaleway-name=obc-04 \
+      --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
+      --swarm \
+      --swarm-discovery consul://`docker-machine ip obc-consul`:8500 \
+      --engine-opt cluster-store=consul://`docker-machine ip obc-consul`:8500 \
+      --engine-opt cluster-advertise=eth0:2376 \
+      obc-04  
+
+    $ docker-machine create -d scaleway \
+      --scaleway-commercial-type=C2L --scaleway-name=obc-05 \
+      --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
+      --swarm \
+      --swarm-discovery consul://`docker-machine ip obc-consul`:8500 \
+      --engine-opt cluster-store=consul://`docker-machine ip obc-consul`:8500 \
+      --engine-opt cluster-advertise=eth0:2376 \
+      obc-05
+
+    $ docker-machine create -d scaleway \
+      --scaleway-commercial-type=C2L --scaleway-name=obc-06 \
+      --scaleway-organization=<SCALEWAY-ACCESS-KEY> --scaleway-token=<SCALEWAY-SECRET-KEY> \
+      --swarm \
+      --swarm-discovery consul://`docker-machine ip obc-consul`:8500 \
+      --engine-opt cluster-store=consul://`docker-machine ip obc-consul`:8500 \
+      --engine-opt cluster-advertise=eth0:2376 \
+      obc-06   
+
   ```
 
 By default the Scaleway machines have a 50GB disk. However, Scaleway can also attach a 250GB SSD, which needs to be mounted manually:
 
   ```
-  $ printf "obc\nobc-01\nobc-02\nobc-03" | \
+  $ printf "obc\nobc-01\nobc-02\nobc-03\nobc-04\nobc-05\nobc-06" | \
     xargs -n 1 -I CONT_NAME docker-machine ssh CONT_NAME \
     "echo ; echo ; echo CONT_NAME ;"`
     `"echo 'Formatting...' ;"`
