@@ -115,6 +115,9 @@ services:
       - cassandra-01
       - cassandra-02
       - cassandra-03
+    volumes:
+      - /openblockchain/cassandra/data:/var/lib/cassandra
+    restart: always
   cassandra-05:
     image: openblockchaininfo/docker-cassandra-svc
     container_name: cassandra-05
