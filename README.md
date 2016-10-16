@@ -7,7 +7,7 @@ The project is split into several services:
 - **Cassandra** persists the data: blocks, transactions, and visualisations (analysed data).
 - **Bitcoin** is used to connect to the Bitcoin blockchain. It's a simple Bitcoin Core node whose role is to index all the blocks and transactions and make them consumable through a HTTP JSON RPC interface.
 - **Scanner** connects to the bitcoin service through its APIs and stores all the blocks and transactions in the Cassandra database.
-- **Spark** analyses the Bitcoin blockchain data stored in Cassandra.
+- **Spark** analyses the Bitcoin blockchain data stored in Cassandra, generating data points for visualising the analysed data.
 - **API** is a REST interface that allows clients to consume the data stored in Cassandra.
 - **Frontend** is the web app used to explore the blockchain and visualise analysed data.
 
