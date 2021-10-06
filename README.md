@@ -17,13 +17,13 @@ All docker images are hosted: https://hub.docker.com/u/openblockchaininfo/
 
 ### Introduction to the following instructions
 
-The following instructions will walk you through installing the entire openblockchain application including all system dependencies and requirements allowing you to run openblockchain from most base systems (Linux, OSX, Windows).
+The following instructions will walk you through installing the entire openblockchain application including all system dependencies and requirements, allowing you to run openblockchain from most base systems (Linux, OSX, Windows).
 
 The instructions will start by guiding you through installing Ubuntu on VirtualBox.
 
 ### System requirements
 
-Due to the computing power and disk space requirements, the data storage and processing for the project was designed to be run on several machines, preferably in a cloud with local management from a host machine.
+Due to the computing power and disk space requirements, the data storage and processing for the project were designed to be run on several machines, preferably in a cloud with local management from a host machine.
 
 ### Prerequisites
 
@@ -44,7 +44,7 @@ You need to create a new virtual machine using VirtualBox. The virtual machine (
   - CPU: Any
   - Disk: 20GB
 
-When you start the host machine for the first time select Ubuntu 16.04.1 LTS - 64 bit (which you downloaded in the previous step) as the start-up disk (it is possible to run the project on other versions of Ubuntu and even other operating systems such as Windows and OS X, but instructions for those have not been included here).
+When you start the host machine for the first time, select Ubuntu 16.04.1 LTS - 64 bit (which you downloaded in the previous step) as the start-up disk (it is possible to run the project on other versions of Ubuntu and even other operating systems such as Windows and OS X, but instructions for those have not been included here).
 
 The host machine will only be used to send commands to the cluster.
 
@@ -140,7 +140,7 @@ You have now configured your host machine. You have:
   - installed Docker Machine
   - installed Docker Compose
 
-This will allow you to manage all the microservices which constitue the openblockchain application from within the host machine.
+This will allow you to manage all the microservices which constitute the openblockchain application from within the host machine.
 
 ---
 
